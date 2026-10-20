@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -27,23 +28,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.tmbmnadim.flight_to_kotlin.R
 import me.tmbmnadim.flight_to_kotlin.models.Airport
+import me.tmbmnadim.flight_to_kotlin.models.Flight
 import me.tmbmnadim.flight_to_kotlin.ui.theme.FlightToKotlinTheme
+import me.tmbmnadim.flight_to_kotlin.ui.view_model.FlightState
 
 
 @Composable
 fun FlightsBody(
     modifier: Modifier = Modifier,
-    searchKey: String? = null,
+    uiState: FlightState,
+    onFavorite: (Flight) -> Unit = {}
 ) {
     Column(modifier) {
-        if (searchKey != null)
+        if (uiState.searchText.isNotEmpty())
             Row {
                 Text(
                     stringResource(R.string.flightsFrom),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    searchKey,
+                    uiState.searchText,
                     style = MaterialTheme.typography.titleMedium
                 )
             }
@@ -53,19 +57,18 @@ fun FlightsBody(
                 style = MaterialTheme.typography.titleMedium
             )
         Box(Modifier.height(16.dp))
-        LazyColumn() {
-            items(20) {
+        LazyColumn {
+            items(
+                if (uiState.searchText.isNotEmpty())
+                    uiState.possibleFlights
+                else uiState.favorites.reversed()
+            ) { flight ->
                 FlightCard(
-                    from = Airport(
-                        id = 0,
-                        iataCode = "AAA",
-                        name = "From Airport",
-                        passengers = 100
-                    ),
-                    to = Airport(id = 1, iataCode = "BBB", name = "To Airport", passengers = 100),
-                    onFavorite = {},
+                    from = flight.from,
+                    to = flight.to,
+                    onFavorite = { onFavorite(flight) },
                     modifier = Modifier.padding(bottom = 8.dp),
-                    isFavorite = it % 2 == 0,
+                    isFavorite = uiState.favorites.any(flight::sameRoute),
                 )
             }
         }
@@ -144,6 +147,6 @@ fun FlightCard(
 @Composable
 fun FlightsBodyPreview() {
     FlightToKotlinTheme {
-        FlightsBody()
+        FlightsBody(uiState = FlightState())
     }
 }

@@ -12,7 +12,9 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import me.tmbmnadim.flight_to_kotlin.R
 import me.tmbmnadim.flight_to_kotlin.ui.views.FlightSearchScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,7 +28,7 @@ fun FlightApp() {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text("Flight Search")
+                        Text(stringResource(R.string.flight_search))
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -36,7 +38,8 @@ fun FlightApp() {
             },
         ) { innerPadding ->
             FlightSearchScreen(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(innerPadding)
             )
         }

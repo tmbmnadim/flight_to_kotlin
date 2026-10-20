@@ -5,4 +5,6 @@
     <string name="search">Search</string>
     <string name="flightsFrom">"Flights from "</string>
     <string name="favoriteFlights">Favorite Flights</string>
+    <string name="flight_search">Flight Search</string>
+    <string name="noFlights">No Flights</string>
 </resources>
