@@ -45,9 +45,9 @@ fun FlightSearchScreen(
             prefix = {
                 Icon(Icons.Outlined.Search, contentDescription = "Search")
             },
-            suffix = {
-                Icon(Icons.Outlined.Mic, contentDescription = "Search")
-            },
+//            suffix = {
+//                Icon(Icons.Outlined.Mic, contentDescription = "Search")
+//            },
         )
         Box(Modifier.height(16.dp))
         if (uiState.value.searchText.isNotBlank() && uiState.value.possibleFlights.isEmpty())

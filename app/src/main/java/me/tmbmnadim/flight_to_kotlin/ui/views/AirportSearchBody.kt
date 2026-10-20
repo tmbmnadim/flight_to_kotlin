@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,9 +50,11 @@ fun ResultTile(
     onclick: () -> Unit = {}
 ) {
     OutlinedButton(
+        modifier = modifier
+            .testTag("result_tile"),
         onClick = onclick
     ) {
-        Row(modifier) {
+        Row {
             Text(
                 text = airport.iataCode,
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
