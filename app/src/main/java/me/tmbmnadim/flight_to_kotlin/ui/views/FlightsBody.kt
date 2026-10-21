@@ -23,6 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,7 +44,7 @@ fun FlightsBody(
 ) {
     Column(modifier) {
         if (uiState.searchText.isNotEmpty())
-            Row {
+            Row(modifier = Modifier.testTag("flights_from_x")) {
                 Text(
                     stringResource(R.string.flightsFrom),
                     style = MaterialTheme.typography.titleMedium
@@ -54,20 +57,22 @@ fun FlightsBody(
         else
             Text(
                 stringResource(R.string.favoriteFlights),
+                modifier = Modifier.testTag("favorite_flights"),
                 style = MaterialTheme.typography.titleMedium
             )
         Box(Modifier.height(16.dp))
         LazyColumn {
             items(
-                if (uiState.searchText.isNotEmpty())
-                    uiState.possibleFlights
+                if (uiState.searchText.isNotEmpty()) uiState.possibleFlights
                 else uiState.favorites.reversed()
             ) { flight ->
                 FlightCard(
                     from = flight.from,
                     to = flight.to,
                     onFavorite = { onFavorite(flight) },
-                    modifier = Modifier.padding(bottom = 8.dp),
+                    modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .testTag("flight_card"),
                     isFavorite = uiState.favorites.any(flight::sameRoute),
                 )
             }
@@ -132,6 +137,9 @@ fun FlightCard(
             Box(Modifier.width(12.dp))
             IconButton(
                 onClick = onFavorite,
+                modifier = Modifier
+                    .testTag("favorite_button")
+                    .semantics { selected = isFavorite },
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = Color.Transparent,
                     contentColor = iconColor,

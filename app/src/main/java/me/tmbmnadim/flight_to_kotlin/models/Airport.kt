@@ -4,5 +4,4 @@ data class Airport(
     val id: Int,
     val name: String,
     val iataCode: String,
-    val passengers: Int,
 )

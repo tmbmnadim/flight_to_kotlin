@@ -20,8 +20,8 @@ class AirportSearchBodyTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    val airport1: Airport = Airport(id = 0, iataCode = "AAA", name = "Airport A", passengers = 100)
-    val airport2: Airport = Airport(id = 1, iataCode = "BBB", name = "Airport B", passengers = 100)
+    val airport1: Airport = Airport(id = 0, iataCode = "AAA", name = "Airport A")
+    val airport2: Airport = Airport(id = 1, iataCode = "BBB", name = "Airport B")
     val airports = listOf(airport1, airport2)
 
     @Test
