@@ -1,4 +1,4 @@
-package me.tmbmnadim.flight_to_kotlin.ui
+package me.tmbmnadim.flight_to_kotlin
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -8,18 +8,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import me.tmbmnadim.flight_to_kotlin.R
 import me.tmbmnadim.flight_to_kotlin.ui.views.FlightSearchScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FlightApp() {
+fun FlightSearchApp() {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -48,6 +46,6 @@ fun FlightApp() {
 
 @Preview(showBackground = true)
 @Composable
-fun FlightAppPreview() {
-    FlightApp()
+fun FlightSearchAppPreview() {
+    FlightSearchApp()
 }
