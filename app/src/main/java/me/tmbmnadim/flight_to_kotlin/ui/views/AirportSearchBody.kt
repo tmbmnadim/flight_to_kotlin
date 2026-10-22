@@ -7,25 +7,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.tmbmnadim.flight_to_kotlin.R
 import me.tmbmnadim.flight_to_kotlin.models.Airport
-import me.tmbmnadim.flight_to_kotlin.ui.view_model.FlightState
+import me.tmbmnadim.flight_to_kotlin.ui.view_model.FlightSearchState
 
 @Composable
 fun AirportSearchBody(
     modifier: Modifier = Modifier,
-    flightState: FlightState,
+    flightState: FlightSearchState,
     onclick: (Airport) -> Unit = {}
 ) {
     LazyColumn(modifier = modifier) {
@@ -75,7 +72,7 @@ fun ResultTile(
 @Composable
 fun AirportSearchBodyPreview() {
     AirportSearchBody(
-        flightState = FlightState(
+        flightState = FlightSearchState(
             listOf(
                 Airport(id = 0, iataCode = "AAA", name = "Airport A", passengers = 100),
                 Airport(id = 1, iataCode = "BBB", name = "Airport B", passengers = 100),

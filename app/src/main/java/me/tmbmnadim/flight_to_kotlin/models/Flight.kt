@@ -5,5 +5,6 @@ data class Flight (
     val from: Airport,
     val to: Airport,
 ) {
-    fun sameRoute(other: Flight): Boolean = from.id == other.from.id && to.id == other.to.id
+    fun isIn(favorites: List<Favorite>) =
+        favorites.any { it.departureCode == from.iataCode && it.destinationCode == to.iataCode }
 }

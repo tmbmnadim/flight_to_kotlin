@@ -33,13 +33,13 @@ import me.tmbmnadim.flight_to_kotlin.R
 import me.tmbmnadim.flight_to_kotlin.models.Airport
 import me.tmbmnadim.flight_to_kotlin.models.Flight
 import me.tmbmnadim.flight_to_kotlin.ui.theme.FlightToKotlinTheme
-import me.tmbmnadim.flight_to_kotlin.ui.view_model.FlightState
+import me.tmbmnadim.flight_to_kotlin.ui.view_model.FlightSearchState
 
 
 @Composable
 fun FlightsBody(
     modifier: Modifier = Modifier,
-    uiState: FlightState,
+    uiState: FlightSearchState,
     onFavorite: (Flight) -> Unit = {}
 ) {
     Column(modifier) {
@@ -61,10 +61,11 @@ fun FlightsBody(
                 style = MaterialTheme.typography.titleMedium
             )
         Box(Modifier.height(16.dp))
+        if(uiState.possibleFlights.isNotEmpty() || uiState.favoriteFlights.isNotEmpty())
         LazyColumn {
             items(
                 if (uiState.searchText.isNotEmpty()) uiState.possibleFlights
-                else uiState.favorites.reversed()
+                else uiState.favoriteFlights.reversed()
             ) { flight ->
                 FlightCard(
                     from = flight.from,
@@ -73,13 +74,20 @@ fun FlightsBody(
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .testTag("flight_card"),
-                    isFavorite = uiState.favorites.any(flight::sameRoute),
+                    isFavorite = flight.isIn(uiState.favorites),
                 )
             }
         }
+        else
+            EmptyFlights()
     }
 }
 
+
+@Composable
+fun EmptyFlights() {
+    Text(stringResource(R.string.noFlights))
+}
 
 @Composable
 fun FlightCard(
@@ -155,6 +163,6 @@ fun FlightCard(
 @Composable
 fun FlightsBodyPreview() {
     FlightToKotlinTheme {
-        FlightsBody(uiState = FlightState())
+        FlightsBody(uiState = FlightSearchState())
     }
 }

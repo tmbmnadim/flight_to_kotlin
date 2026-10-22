@@ -3,13 +3,11 @@ package me.tmbmnadim.flight_to_kotlin
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import junit.framework.TestCase.assertEquals
 import me.tmbmnadim.flight_to_kotlin.models.Airport
-import me.tmbmnadim.flight_to_kotlin.ui.view_model.FlightState
+import me.tmbmnadim.flight_to_kotlin.ui.view_model.FlightSearchState
 import me.tmbmnadim.flight_to_kotlin.ui.views.AirportSearchBody
 import org.junit.Rule
 import org.junit.Test
@@ -28,7 +26,7 @@ class AirportSearchBodyTest {
     fun resultTileList_listsAllAirports() {
         composeTestRule.setContent {
             AirportSearchBody(
-                flightState = FlightState(
+                flightState = FlightSearchState(
                     airports = airports
                 )
             )
@@ -43,7 +41,7 @@ class AirportSearchBodyTest {
     fun resultTileList_listsNoAirports() {
         composeTestRule.setContent {
             AirportSearchBody(
-                flightState = FlightState()
+                flightState = FlightSearchState()
             )
         }
 
@@ -58,7 +56,7 @@ class AirportSearchBodyTest {
 
         composeTestRule.setContent {
             AirportSearchBody(
-                flightState = FlightState(
+                flightState = FlightSearchState(
                     airports = airports
                 ),
                 onclick = {

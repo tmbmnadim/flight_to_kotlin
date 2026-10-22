@@ -10,11 +10,11 @@ import me.tmbmnadim.flight_to_kotlin.models.Favorite
 @Dao
 interface FavoriteDao {
     @Query("SELECT * FROM favorite")
-    fun getAllFavorites(): Flow<Favorite>
+    fun getAllFavorites(): Flow<List<Favorite>>
 
     @Insert
     suspend fun insertFavorite(favorite: Favorite)
 
-    @Query("DELETE FROM favorite WHERE departure_code = :dep AND destination_code = :dest")
-    suspend fun deleteFavorite(dep: String, dest: String)
+    @Query("DELETE FROM favorite WHERE departure_code = :departureCode AND destination_code = :destinationCode")
+    suspend fun deleteFavorite(departureCode: String, destinationCode: String)
 }

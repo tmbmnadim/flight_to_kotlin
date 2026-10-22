@@ -5,7 +5,7 @@ import me.tmbmnadim.flight_to_kotlin.models.Airport
 import me.tmbmnadim.flight_to_kotlin.models.Favorite
 
 interface AirportRepository {
-    fun getAirports(): Flow<Airport>
-    fun searchAirports(query: String): Flow<Airport>
-    fun getDestinations(iataCode: String): Flow<Airport>
+    fun getAirports(): Flow<List<Airport>>
+    fun searchAirports(query: String): Flow<List<Airport>>
+    fun getDestinations(iataCode: String): Flow<List<Airport>>
 }
