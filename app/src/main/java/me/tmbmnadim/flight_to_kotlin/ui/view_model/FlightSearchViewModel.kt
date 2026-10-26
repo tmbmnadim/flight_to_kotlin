@@ -1,5 +1,6 @@
 package me.tmbmnadim.flight_to_kotlin.ui.view_model
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -23,19 +26,28 @@ import kotlinx.coroutines.launch
 import me.tmbmnadim.flight_to_kotlin.FlightSearchApplication
 import me.tmbmnadim.flight_to_kotlin.models.Airport
 import me.tmbmnadim.flight_to_kotlin.models.Favorite
-import me.tmbmnadim.flight_to_kotlin.models.Flight
+import me.tmbmnadim.flight_to_kotlin.models.FlightRoute
 import me.tmbmnadim.flight_to_kotlin.repositories.AirportRepository
 import me.tmbmnadim.flight_to_kotlin.repositories.FavoriteRepository
+import me.tmbmnadim.flight_to_kotlin.repositories.FlightSearchPreferencesRepository
+import okio.IOException
+import kotlin.collections.map
 import kotlin.time.Duration.Companion.milliseconds
 
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class FlightSearchViewModel(
-    val airportRepository: AirportRepository,
-    val favoriteRepository: FavoriteRepository
+    private val airportRepository: AirportRepository,
+    private val favoriteRepository: FavoriteRepository,
+    private val flightSearchPrefsRepo: FlightSearchPreferencesRepository
 ) : ViewModel() {
-    private val searchText = MutableStateFlow("")
-    private val selectedAirport = MutableStateFlow<Airport?>(null)
+    private data class SearchData(
+        val query: Query,
+        val suggestions: List<Airport>,
+        val destinations: List<FlightRoute>,
+    )
+
+    private data class Query(val text: String = "", val selected: Airport? = null)
 
     private val query = MutableStateFlow(Query())
     private val suggestions: Flow<List<Airport>> = query
@@ -46,21 +58,14 @@ class FlightSearchViewModel(
             if (text.isBlank()) flowOf(emptyList())
             else airportRepository.searchAirports(text)
         }
-    private val destinations: Flow<List<Airport>> = query
+    private val destinations: Flow<List<FlightRoute>> = query
         .map { it.selected }
         .distinctUntilChanged()
         .flatMapLatest { from ->
             if (from == null) flowOf(emptyList())
             else airportRepository.getDestinations(from.iataCode)
+                .map { list -> list.map{ FlightRoute(it.id, from, it) } }
         }
-
-    private data class SearchData(
-        val query: Query,
-        val suggestions: List<Airport>,
-        val destinations: List<Airport>,
-    )
-
-    private data class Query(val text: String = "", val selected: Airport? = null)
 
     private val searchData = combine(
         query, suggestions, destinations,
@@ -73,19 +78,18 @@ class FlightSearchViewModel(
         favoriteRepository.getFavorites(),
     ) { search, airports, favorites ->
         val byCode = airports.associateBy { it.iataCode }
-        val favoriteFlights = favorites.mapNotNull { fav ->
+        val favoriteFlightRoutes = favorites.mapNotNull { fav ->
             val from = byCode[fav.departureCode]
             val to = byCode[fav.destinationCode]
-            if (from != null && to != null) Flight(fav.id, from, to) else null
+            if (from != null && to != null) FlightRoute(fav.id, from, to) else null
         }
         FlightSearchState(
             searchText = search.query.text,
+            selectedAirport = search.query.selected,
             airports = search.suggestions,
-            possibleFlights = search.query.selected?.let { from ->
-                search.destinations.map { Flight(it.id, from, it) }
-            }.orEmpty(),
+            destinations = search.destinations,
             favorites = favorites,
-            favoriteFlights = favoriteFlights,
+            favoriteFlightRoutes = favoriteFlightRoutes,
         )
     }.stateIn(
         viewModelScope,
@@ -93,36 +97,59 @@ class FlightSearchViewModel(
         FlightSearchState()
     )
 
-    fun onAirportSelected(airport: Airport) =
-        query.update { Query(text = airport.iataCode, selected = airport) }
 
-    fun onValueChanged(value: String) =
-        query.update { Query(text = value) }
 
-    fun onFavorite(flight: Flight) = viewModelScope.launch {
-        if (flight.isIn(uiState.value.favorites)) {
+    init {
+        viewModelScope.launch {
+            val saved = flightSearchPrefsRepo.searchText.first()
+            if (query.value.text.isEmpty()) query.update {
+                Query(text = saved)
+            }
+            query
+                .map { it.text }
+                .drop(1)
+                .debounce(300.milliseconds)
+                .distinctUntilChanged()
+                .collect {
+                    try {
+                        flightSearchPrefsRepo.saveSearchPreferences(it)
+                    } catch (e: IOException) {
+                        Log.e(TAG, "Couldn't save search text", e)
+                    }
+                }
+        }
+    }
+
+    fun onAirportSelected(airport: Airport) = query.update { Query(text = airport.iataCode, selected = airport) }
+
+    fun onValueChanged(value: String) = query.update { Query(text = value) }
+
+    fun onFavorite(flightRoute: FlightRoute) = viewModelScope.launch {
+        if (flightRoute.isIn(uiState.value.favorites)) {
             favoriteRepository.removeFavorite(
-                departureCode = flight.from.iataCode,
-                destinationCode = flight.to.iataCode
+                departureCode = flightRoute.from.iataCode,
+                destinationCode = flightRoute.to.iataCode
             )
         } else {
             favoriteRepository.addFavorite(
                 Favorite(
-                    departureCode = flight.from.iataCode,
-                    destinationCode = flight.to.iataCode
+                    departureCode = flightRoute.from.iataCode,
+                    destinationCode = flightRoute.to.iataCode
                 )
             )
         }
     }
 
     companion object {
+        private const val TAG = "FlightSearchViewModel"
         val Factory = viewModelFactory {
             initializer {
                 val flightSearchApplication: FlightSearchApplication =
                     (this[APPLICATION_KEY] as FlightSearchApplication)
                 FlightSearchViewModel(
                     flightSearchApplication.appContainer.airportRepository,
-                    flightSearchApplication.appContainer.favoriteRepository
+                    flightSearchApplication.appContainer.favoriteRepository,
+                    flightSearchApplication.appContainer.flightSearchPrefsRepo,
                 )
             }
         }

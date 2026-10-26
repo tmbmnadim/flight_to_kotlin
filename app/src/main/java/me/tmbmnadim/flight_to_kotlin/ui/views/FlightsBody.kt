@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.tmbmnadim.flight_to_kotlin.R
 import me.tmbmnadim.flight_to_kotlin.models.Airport
-import me.tmbmnadim.flight_to_kotlin.models.Flight
+import me.tmbmnadim.flight_to_kotlin.models.FlightRoute
 import me.tmbmnadim.flight_to_kotlin.ui.theme.FlightToKotlinTheme
 import me.tmbmnadim.flight_to_kotlin.ui.view_model.FlightSearchState
 
@@ -40,7 +40,7 @@ import me.tmbmnadim.flight_to_kotlin.ui.view_model.FlightSearchState
 fun FlightsBody(
     modifier: Modifier = Modifier,
     uiState: FlightSearchState,
-    onFavorite: (Flight) -> Unit = {}
+    onFavorite: (FlightRoute) -> Unit = {}
 ) {
     Column(modifier) {
         if (uiState.searchText.isNotEmpty())
@@ -61,11 +61,11 @@ fun FlightsBody(
                 style = MaterialTheme.typography.titleMedium
             )
         Box(Modifier.height(16.dp))
-        if(uiState.possibleFlights.isNotEmpty() || uiState.favoriteFlights.isNotEmpty())
+        if(uiState.destinations.isNotEmpty() || uiState.favoriteFlightRoutes.isNotEmpty())
         LazyColumn {
             items(
-                if (uiState.searchText.isNotEmpty()) uiState.possibleFlights
-                else uiState.favoriteFlights.reversed()
+                if (uiState.searchText.isNotEmpty()) uiState.destinations
+                else uiState.favoriteFlightRoutes.reversed()
             ) { flight ->
                 FlightCard(
                     from = flight.from,

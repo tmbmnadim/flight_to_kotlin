@@ -46,7 +46,7 @@ fun FlightSearchScreen(
 //            },
         )
         Box(Modifier.height(16.dp))
-        if (uiState.value.searchText.isNotBlank() && uiState.value.possibleFlights.isEmpty())
+        if (uiState.value.searchText.isNotBlank() && uiState.value.selectedAirport == null)
             AirportSearchBody(
                 Modifier.weight(1f),
                 onclick = flightViewModel::onAirportSelected,

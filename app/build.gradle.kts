@@ -50,10 +50,13 @@ dependencies {
     // Viewmodel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    //Room
+    // Room
     implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation(libs.androidx.room.ktx)
+
+    // Datastore Preferences
+    implementation(libs.androidx.datastore.preferences)
 
     // Testing
     androidTestImplementation(libs.androidx.espresso.core)

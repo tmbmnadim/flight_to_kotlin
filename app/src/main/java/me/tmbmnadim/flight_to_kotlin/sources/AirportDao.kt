@@ -7,7 +7,7 @@ import me.tmbmnadim.flight_to_kotlin.models.Airport
 
 @Dao
 interface AirportDao {
-    @Query("SELECT * FROM airport")
+    @Query("SELECT * FROM airport ORDER BY passengers DESC")
     fun getAllAirports(): Flow<List<Airport>>
 
     @Query("""
@@ -17,6 +17,6 @@ interface AirportDao {
     """)
     fun searchAirports(query: String): Flow<List<Airport>>
 
-    @Query("SELECT * FROM airport WHERE NOT iata_code = :iataCode")
+    @Query("SELECT * FROM airport WHERE NOT iata_code = :iataCode ORDER BY passengers DESC")
     fun getDestinations(iataCode: String): Flow<List<Airport>>
 }

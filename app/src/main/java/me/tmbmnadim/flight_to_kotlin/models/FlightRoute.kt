@@ -1,6 +1,6 @@
 package me.tmbmnadim.flight_to_kotlin.models
 
-data class Flight (
+data class FlightRoute (
     val id: Int,
     val from: Airport,
     val to: Airport,
