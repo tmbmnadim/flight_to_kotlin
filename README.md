@@ -1,6 +1,6 @@
 # Flight Search App
 
-An Android application built with Kotlin and Jetpack Compose that allows users to search for airports, discover flight routes, and save favorite destinations. This project was developed as part of the Android Basics with Compose curriculum to demonstrate local data persistence.
+An Android application built with Kotlin and Jetpack Compose that allows users to search for airports, discover flight routes, and save favorite destinations. This project was built by following the [Flight Search codelab](https://developer.android.com/codelabs/basic-android-kotlin-compose-flight-search) from the Android Basics with Compose curriculum, which covers local data persistence with Room and Preferences DataStore.
 
 ## Features
 
@@ -9,14 +9,18 @@ An Android application built with Kotlin and Jetpack Compose that allows users t
 * **Flight Routes:** Selecting an airport displays available flights to other destinations, showing both IATA codes and full airport names.
 * **Favorite Routes:** Save specific flight routes to a favorites list for quick access.
 * **Default View:** Displays saved favorite routes automatically when the search query is empty.
-* **State Persistence:** Saves the current search text using Preferences DataStore. The search field and corresponding results are automatically restored when reopening the app.
+* **State Persistence:** Saves the current search text using Preferences DataStore. The search field and its autocomplete suggestions are restored when reopening the app.
 
 ## Tech Stack
 
-* **UI:** Jetpack Compose
 * **Language:** Kotlin
-* **Database:** Room (SQLite)
+* **UI:** Jetpack Compose with Material 3
+* **Architecture:** MVVM with a repository layer, a single `ViewModel` exposing a `StateFlow` UI state, and a manual dependency container (`AppContainer`)
+* **Asynchrony:** Kotlin Coroutines and Flow
+* **Database:** Room (SQLite), created from a pre-populated asset database, with KSP for code generation
 * **Local Storage:** Preferences DataStore
+* **Testing:** JUnit4 and Compose UI tests
+* **Minimum SDK:** 24
 
 ## Database Schema
 
@@ -41,5 +45,5 @@ The app uses a pre-populated SQLite database (`flight_search.db`) with two main 
 
 1. Clone this repository.
 2. Open the project in Android Studio.
-3. Ensure the pre-populated `flight_search.db` file is located in the project's assets directory.
+3. Ensure the pre-populated `flight_search.db` file is located in `app/src/main/assets/database/`.
 4. Build and run the application on an emulator or physical device.
